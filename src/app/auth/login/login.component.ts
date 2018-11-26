@@ -1,20 +1,29 @@
-import { AuthService } from './../auth.service';
-import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store'
+import { AppState } from 'src/app/app.reducer'
+import { AuthService } from './../auth.service'
+import { Component, OnInit } from '@angular/core'
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styles: []
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styles: []
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private authService: AuthService) { }
+    cargando: boolean
 
-  ngOnInit() {
-  }
+    constructor(
+        private authService: AuthService,
+        private store: Store<AppState>
+    ) {}
 
-  loginSubmit(data) {
+    ngOnInit() {
+        this.store.select('ui')
+        .subscribe( ui => this.cargando = ui.isLoading )
+    }
+
+    loginSubmit(data) {
     this.authService.login(data.email, data.password)
-  }
+    }
 
 }

@@ -1,20 +1,27 @@
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/app.reducer';
 import { AuthService } from './../auth.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styles: []
+    selector: 'app-register',
+    templateUrl: './register.component.html',
+    styles: []
 })
 export class RegisterComponent implements OnInit {
 
-  constructor(public authService: AuthService) { }
+    cargando: boolean
 
-  ngOnInit() {
-  }
+    constructor(public authService: AuthService,
+                private store: Store<AppState>) { }
 
-  onSubmit(data) {
+    ngOnInit() {
+        this.store.select('ui')
+        .subscribe( ui => this.cargando = ui.isLoading )
+    }
+
+    onSubmit(data) {
     this.authService.crearUsuario(data.nombre, data.email, data.password)
-  }
+    }
 
 }
