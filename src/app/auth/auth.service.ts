@@ -12,11 +12,15 @@ import Swal from 'sweetalert2'
 import { Store } from '@ngrx/store'
 import { AppState } from './../app.reducer'
 import { ActicarLoadingAction, DesacticarLoadingAction } from './../shared/ui.actions';
+import { SetUserAction } from './auth.actions';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+
+    private userSubscription: Subscription = new Subscription()
 
     constructor(private router: Router,
                 private store: Store<AppState>,
@@ -25,7 +29,16 @@ export class AuthService {
 
     initAuthListener() {
         this.afAuth.authState.subscribe( (fbUser: fronFirebase.User) => {
-            console.log(fbUser)
+            if (fbUser) {
+                this.userSubscription = this.afDB.doc(`${fbUser.uid}/usuario`).valueChanges()
+                .subscribe( (usarioObj: any) => {
+                    const newUser = new User( usarioObj )
+                    this.store.dispatch( new SetUserAction(newUser ))
+                    // console.log(newUser)
+                })
+            } else {
+                this.userSubscription.unsubscribe()
+            }
         })
     }
 
