@@ -21,6 +21,7 @@ import { Subscription } from 'rxjs';
 export class AuthService {
 
     private userSubscription: Subscription = new Subscription()
+    private usuario: User
 
     constructor(private router: Router,
                 private store: Store<AppState>,
@@ -34,9 +35,10 @@ export class AuthService {
                 .subscribe( (usarioObj: any) => {
                     const newUser = new User( usarioObj )
                     this.store.dispatch( new SetUserAction(newUser ))
-                    // console.log(newUser)
+                    this.usuario = newUser
                 })
             } else {
+                this.usuario = null
                 this.userSubscription.unsubscribe()
             }
         })
@@ -104,6 +106,10 @@ export class AuthService {
                 return fbUser !== null
             })
         )
+    }
+
+    getUsuario() {
+        return {...this.usuario }
     }
 
 }
